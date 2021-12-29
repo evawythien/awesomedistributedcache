@@ -1,4 +1,5 @@
 using AwesomeDistributed.Site.Data;
+using AwesomeDistributed.Site.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,10 @@ namespace AwesomeDistributed.Site
         {
             services.AddDbContext<AwesomeDistributedContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
+            services.AddDistributedMemoryCache();
+            services.AddResponseCaching();
+
+            services.AddScoped<ProductsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,11 +43,11 @@ namespace AwesomeDistributed.Site
             }
 
             app.UseHttpsRedirection();
+
+            app.UseResponseCaching();
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

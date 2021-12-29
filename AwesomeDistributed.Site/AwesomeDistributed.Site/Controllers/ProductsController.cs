@@ -1,8 +1,12 @@
-﻿using AwesomeDistributed.Site.Services;
+﻿using AwesomeDistributed.Site.Entities;
+using AwesomeDistributed.Site.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AwesomeDistributed.Site.Controllers
 {
+    [ApiController, Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
         private readonly ProductsService productsServices;
@@ -12,14 +16,11 @@ namespace AwesomeDistributed.Site.Controllers
             this.productsServices = productsServices;
         }
 
-        public ActionResult Get()
+        [HttpGet]
+        [ResponseCache(VaryByQueryKeys = new[] { "name", "available" }, Duration = 5000)]
+        public async Task<List<Product>> GetAll([FromQuery] string? name = null, [FromQuery] bool? available = null)
         {
-            return null;
-        }
-
-        public ActionResult GetAll()
-        {
-            return null;
+            return await this.productsServices.Get(name, available);
         }
     }
 }

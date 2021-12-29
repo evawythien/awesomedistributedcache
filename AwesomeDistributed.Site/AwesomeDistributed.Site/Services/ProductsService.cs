@@ -1,7 +1,6 @@
 ﻿using AwesomeDistributed.Site.Data;
 using AwesomeDistributed.Site.Entities;
-using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,14 +16,17 @@ namespace AwesomeDistributed.Site.Services
             this.context = context;
         }
 
-        public List<Product> Get()
+        public async Task<List<Product>> Get(string? name = null, bool? available = null)
         {
-            return this.context.Products.ToList();
-        }
+            IQueryable<Product> query = this.context.Products.Take(20000);
 
-        public ActionResult GetAll()
-        {
-            return null;
+            if (!string.IsNullOrEmpty(name))
+                query = query.Where(p => p.Name.Contains(name));
+
+            if (available != null)
+                query = query.Where(p => p.Available == available);
+
+            return await query.ToListAsync();
         }
     }
 }
