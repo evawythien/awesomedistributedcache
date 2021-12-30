@@ -1,25 +1,39 @@
 ﻿using AwesomeDistributed.Site.Services;
+using AwesomeDistributed.Site.Services.Command;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AwesomeDistributed.Site.Controllers
 {
+    [ApiController, Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductsService productsServices;
+        private readonly IMediator mediator;
 
-        public ProductsController(ProductsService productsServices)
+        public ProductsController(IMediator mediator)
         {
-            this.productsServices = productsServices;
+            this.mediator = mediator;
         }
 
-        public ActionResult Get()
+        [HttpGet]
+        [ResponseCache(VaryByQueryKeys = new[] { "name", "available" }, Duration = 5000)]
+        public async Task<List<GetProducts.GetProductsResponse>> GetAll([FromQuery] GetProducts.GetProductsRequest request)
         {
-            return null;
+            return await this.mediator.Send(request).ConfigureAwait(false);
         }
 
-        public ActionResult GetAll()
+        [HttpGet("mediatr")]
+        public async Task<List<GetProductsMediatr.GetProductsMediatrResponse>> GetAllMediatr([FromQuery] GetProductsMediatr.GetProductsMediatrRequest request)
         {
-            return null;
+            return await this.mediator.Send(request).ConfigureAwait(false);
+        }
+
+        [HttpPost("mediatr")]
+        public async Task<CreateProduct.CreateProductsResponse> CreateProduct([FromBody] CreateProduct.CreateProductsRequest request)
+        {
+            return await this.mediator.Send(request).ConfigureAwait(false);
         }
     }
 }
