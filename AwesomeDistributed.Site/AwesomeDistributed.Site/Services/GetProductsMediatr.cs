@@ -1,4 +1,5 @@
-﻿using AwesomeDistributed.Site.Data;
+﻿using AwesomeDistributed.Site.Caching;
+using AwesomeDistributed.Site.Data;
 using AwesomeDistributed.Site.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,22 +10,32 @@ using System.Threading.Tasks;
 
 namespace AwesomeDistributed.Site.Services
 {
-    public class GetProducts
+    public class GetProductsMediatr
     {
-        public class GetProductsRequest : IRequest<List<GetProductsResponse>>
+        public class GetProductsMediatrRequest : IRequest<List<GetProductsMediatrResponse>>, ICacheableRequest
         {
             public string? Name { get; set; }
             public bool? Available { get; set; }
+
+            public string GetCacheKey()
+            {
+                return $"{nameof(GetProductsMediatr)}_{Name}_{Available}";
+            }
         }
 
-        public class GetProductsResponse
+        public class GetProductsMediatrResponse
         {
             public long Id { get; set; }
             public string Name { get; set; }
             public decimal Price { get; set; }
             public bool Available { get; set; }
 
-            public GetProductsResponse(Product product)
+            public GetProductsMediatrResponse()
+            {
+
+            }
+
+            public GetProductsMediatrResponse(Product product)
             {
                 this.Id = product.Id;
                 this.Name = product.Name;
@@ -33,16 +44,16 @@ namespace AwesomeDistributed.Site.Services
             }
         }
 
-        public class GetProductsCommandHandler : IRequestHandler<GetProductsRequest, List<GetProductsResponse>>
+        public class GetProductsMediatrCommandHandler : IRequestHandler<GetProductsMediatrRequest, List<GetProductsMediatrResponse>>
         {
             private readonly AwesomeDistributedContext context;
 
-            public GetProductsCommandHandler(AwesomeDistributedContext context)
+            public GetProductsMediatrCommandHandler(AwesomeDistributedContext context)
             {
                 this.context = context;
             }
 
-            public async Task<List<GetProductsResponse>> Handle(GetProductsRequest request, CancellationToken cancellationToken)
+            public async Task<List<GetProductsMediatrResponse>> Handle(GetProductsMediatrRequest request, CancellationToken cancellationToken)
             {
                 IQueryable<Product> query = this.context.Products.Take(1000);
 
@@ -52,7 +63,7 @@ namespace AwesomeDistributed.Site.Services
                 if (request.Available != null)
                     query = query.Where(p => p.Available == request.Available);
 
-                return await query.Select(product => new GetProductsResponse(product)).ToListAsync(cancellationToken);
+                return await query.Select(product => new GetProductsMediatrResponse(product)).ToListAsync(cancellationToken);
             }
         }
     }

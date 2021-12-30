@@ -22,5 +22,11 @@ namespace AwesomeDistributed.Site.Controllers
         {
             return await this.mediator.Send(request).ConfigureAwait(false);
         }
+
+        [HttpGet("mediatr")]
+        public async Task<List<GetProductsMediatr.GetProductsMediatrResponse>> GetAllMediatr([FromQuery] GetProductsMediatr.GetProductsMediatrRequest request)
+        {
+            return await this.mediator.Send(request).ConfigureAwait(false);
+        }
     }
 }

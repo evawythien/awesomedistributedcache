@@ -17,6 +17,6 @@ namespace AwesomeDistributed.Site
                 {
                     webBuilder.UseStartup<Startup>();
                 })
-            .ConfigureLogging((builder) => builder.ClearProviders());
+            .ConfigureLogging((builder) => builder.AddConsole());
     }
 }
