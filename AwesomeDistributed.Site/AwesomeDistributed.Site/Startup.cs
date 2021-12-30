@@ -1,6 +1,5 @@
 using AwesomeDistributed.Site.Caching;
 using AwesomeDistributed.Site.Data;
-using AwesomeDistributed.Site.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace AwesomeDistributed.Site
 {
@@ -29,12 +28,14 @@ namespace AwesomeDistributed.Site
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("RedisCacheConnection");
-                options.InstanceName = "SampleInstance";
             });
             services.AddResponseCaching();
 
+            services.AddSingleton(services => ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisCacheConnection")));
+
             services.AddMediatR(typeof(Startup).Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachePipelineBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationPipelineBehavior<,>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

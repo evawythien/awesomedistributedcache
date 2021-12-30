@@ -1,14 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace AwesomeDistributed.Site.Caching
 {
     public static class CompressionUtilities
     {
-        private static JsonSerializer serializer = new JsonSerializer();
+        private static readonly JsonSerializer serializer = new();
 
         public static byte[] Zip<T>(T value)
         {
@@ -18,7 +17,7 @@ namespace AwesomeDistributed.Site.Caching
             using (var jtw = new JsonTextWriter(sw))
             {
                 serializer.Serialize(jtw, value);
-
+                jtw.Flush();
                 return mso.ToArray();
             }
         }

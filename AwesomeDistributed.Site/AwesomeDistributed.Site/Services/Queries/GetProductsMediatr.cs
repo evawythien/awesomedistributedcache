@@ -32,7 +32,7 @@ namespace AwesomeDistributed.Site.Services
 
             public GetProductsMediatrResponse()
             {
-
+                this.Name = string.Empty;
             }
 
             public GetProductsMediatrResponse(Product product)
@@ -55,7 +55,7 @@ namespace AwesomeDistributed.Site.Services
 
             public async Task<List<GetProductsMediatrResponse>> Handle(GetProductsMediatrRequest request, CancellationToken cancellationToken)
             {
-                IQueryable<Product> query = this.context.Products.Take(1000);
+                IQueryable<Product> query = this.context.Products.Take(20000);
 
                 if (!string.IsNullOrEmpty(request.Name))
                     query = query.Where(p => p.Name.Contains(request.Name));

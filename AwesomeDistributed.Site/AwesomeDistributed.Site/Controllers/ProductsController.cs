@@ -1,4 +1,5 @@
 ﻿using AwesomeDistributed.Site.Services;
+using AwesomeDistributed.Site.Services.Command;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -25,6 +26,12 @@ namespace AwesomeDistributed.Site.Controllers
 
         [HttpGet("mediatr")]
         public async Task<List<GetProductsMediatr.GetProductsMediatrResponse>> GetAllMediatr([FromQuery] GetProductsMediatr.GetProductsMediatrRequest request)
+        {
+            return await this.mediator.Send(request).ConfigureAwait(false);
+        }
+
+        [HttpPost("mediatr")]
+        public async Task<CreateProduct.CreateProductsResponse> CreateProduct([FromBody] CreateProduct.CreateProductsRequest request)
         {
             return await this.mediator.Send(request).ConfigureAwait(false);
         }
