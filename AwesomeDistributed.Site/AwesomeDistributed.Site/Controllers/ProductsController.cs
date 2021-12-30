@@ -1,5 +1,5 @@
-﻿using AwesomeDistributed.Site.Entities;
-using AwesomeDistributed.Site.Services;
+﻿using AwesomeDistributed.Site.Services;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,18 +9,18 @@ namespace AwesomeDistributed.Site.Controllers
     [ApiController, Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductsService productsServices;
+        private readonly IMediator mediator;
 
-        public ProductsController(ProductsService productsServices)
+        public ProductsController(IMediator mediator)
         {
-            this.productsServices = productsServices;
+            this.mediator = mediator;
         }
 
         [HttpGet]
         [ResponseCache(VaryByQueryKeys = new[] { "name", "available" }, Duration = 5000)]
-        public async Task<List<Product>> GetAll([FromQuery] string? name = null, [FromQuery] bool? available = null)
+        public async Task<List<GetProducts.GetProductsResponse>> GetAll([FromQuery] GetProducts.GetProductsRequest request)
         {
-            return await this.productsServices.Get(name, available);
+            return await this.mediator.Send(request).ConfigureAwait(false);
         }
     }
 }

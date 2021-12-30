@@ -1,5 +1,6 @@
 using AwesomeDistributed.Site.Data;
 using AwesomeDistributed.Site.Services;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,7 @@ namespace AwesomeDistributed.Site
             services.AddDistributedMemoryCache();
             services.AddResponseCaching();
 
+            services.AddMediatR(typeof(Startup).Assembly);
             services.AddScoped<ProductsService>();
         }
 
